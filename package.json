@@ -1,0 +1,23 @@
+{
+  "name": "vkscan",
+  "version": "1.0.0",
+  "description": "vk",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syxme/vkscan.git"
+  },
+  "author": "Dmitry SHebaldin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/syxme/vkscan/issues"
+  },
+  "homepage": "https://github.com/syxme/vkscan#readme",
+  "dependencies": {
+    "async": "^1.5.2",
+    "vksdk": "^5.3.1"
+  }
+}
