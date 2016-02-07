@@ -18,6 +18,11 @@
   "homepage": "https://github.com/syxme/vkscan#readme",
   "dependencies": {
     "async": "^1.5.2",
+    "body-parser": "^1.14.2",
+    "express": "^4.13.4",
+    "express3-handlebars": "^0.5.2",
+    "http": "0.0.0",
+    "mongoose": "4.0.8",
     "vksdk": "^5.3.1"
   }
 }

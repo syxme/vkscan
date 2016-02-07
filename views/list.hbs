@@ -1,0 +1,44 @@
+<style type="text/css">
+.msbox {
+    padding: 8px;
+    padding-left: 15px;
+    margin-bottom: 10px;
+    border-radius: 15px;
+}
+.timeX {
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 15px;
+    float: left;
+}
+.nameX{
+    float: none;
+    color: #000000;
+
+}
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <h2 class="sub-header">Сообщения</h2>
+
+
+  <div class="table-responsive">
+    {{#each messages}}
+      {{#if user_out}}
+        <div class="bg-success col-md-8 pull-right msbox"><p class="timeX">{{time}}</p>{{body}}</div>
+      {{else}}
+        <div class="bg-primary col-md-8 pull-left msbox"><p class="timeX">{{time}}</p><p class="timeX nameX">{{name}}</p>{{body}}</div>
+      {{/if}}
+    {{/each}}
+    </div>
+</div>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+  $('.remove').click(function(){
+    var data = $(this).closest('tr');
+    $.post('/api/removelist',{id:data.attr('id')},function(e){
+      data.remove();
+    });
+  });
+});  
+</script>
