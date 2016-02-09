@@ -110,23 +110,27 @@ var ixt =0;
 function scanFuck(){
 	const countMessage = 5
 	var messages = [];
- var timex = new Date(new Date().getTime()+(8*timeG)); 
-timex = timex.getHours()+":"+timex.getMinutes()+":"+timex.getSeconds();
- console.log(timex+" - Call "+' '+ixt);
-ixt++;
+	var timex = new Date(new Date().getTime()+(8*timeG)); 
+	timex = timex.getHours()+":"+timex.getMinutes()+":"+timex.getSeconds();
+ 	console.log(timex+" - Call "+' '+ixt);
+	ixt++;
 	async.each(blackList, function iterator(item, callback) {
 	    vk.request('messages.getHistory',{user_id:item,count:countMessage+1,rev:0},function(e,cb){
-//		console.log(e);
-	    	messages.push(e.response.items);
+		console.log(' async '+item);
+		if (!e.response.items){
+			console.log(e);
+		}
+		    	messages.push(e.response.items);
 			callback(null);
 		});
 	}, function(err) {
 
-console.log(messages);
+		//console.log(messages);
 		for (var ms in messages){
 			messages[ms] = messages[ms].reverse();
 			for (var index = 0; index<=countMessage;index++){
 				if (index == countMessage){
+					console.log(messages[ms][index]);
 					if (messages[ms][index].id>blackList_of[messages[ms][index].user_id] || blackList_of[messages[ms][index].user_id]==null){
 						for (var x = 0; x<=countMessage;x++){
 							if (messages[ms][x].id>=blackList_of[messages[ms][index].user_id]){
@@ -142,23 +146,13 @@ console.log(messages);
 
 						}
 						blackList_of[messages[ms][index].user_id] = messages[ms][index].id;
-						//console.log('=====Изменение данных===');
 						console.log("RETIT");
 					}
 				}
-
-				// if (messages[ms][index].from_id ==170113147){
-				// 	console.log(timeConverter(messages[ms][index].date)+':яна пишет '+getValue(users,messages[ms][index].user_id)+':'+messages[ms][index].body+'  :'+messages[ms][index].id);				
-				// }else{
-				// 	console.log(timeConverter(messages[ms][index].date)+':'+getValue(users,messages[ms][index].user_id)+':'+messages[ms][index].body+'    :'+messages[ms][index].id);				
-				// }
 			}
-			// console.log('-----------------------')
 		}
-			// console.log(blackList_of);
-});
-			setTimeout(scanFuck,10000);
-
+		setTimeout(scanFuck,15000);
+	});
 }
  scanFuck();
 console.log('SCanfuckloaded');

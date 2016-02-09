@@ -21,8 +21,8 @@ function timeConverter(UNIX_timestamp){
 
 //new Buffer("SGVsbG8gV29ybGQ=", 'base64').toString('ascii')
 
-mongoose.connect("mongodb://admin:BSP7tveEdR1t@"+process.env.OPENSHIFT_MONGODB_DB_HOST+":"+process.env.OPENSHIFT_MONGODB_DB_PORT+"/nodetestgo");
-//mongoose.connect("mongodb://localhost:27017/langate");
+//mongoose.connect("mongodb://admin:BSP7tveEdR1t@"+process.env.OPENSHIFT_MONGODB_DB_HOST+":"+process.env.OPENSHIFT_MONGODB_DB_PORT+"/nodetestgo");
+mongoose.connect("mongodb://localhost:27017/langate");
 
 scanlist = new Schema({
 	name:String,
