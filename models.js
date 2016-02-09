@@ -29,7 +29,8 @@ scanlist = new Schema({
 	messages:[{}],
 	id:String,
 	image:String,
-	url:String
+	url:String,
+	last_id:String
 });
 
 // scanlist.virtual("time").get(function(){
@@ -45,7 +46,7 @@ scanlist.statics.Update = function(data,cb){
 
 
 scanlist.statics.addNewMessage = function(data,cb){
-	models.ScanList.update({id:data.id},{$pushAll:{messages:data.messages}},function(err,res){
+	models.ScanList.update({id:data.id},{$pushAll:{messages:data.messages},last_id:data.last_id},function(err,res){
 		cb(err,res);
 	});
 };
@@ -59,7 +60,11 @@ scanlist.statics.List = function(cb){
 		cb(err,res);
 	});
 };
-
+scanlist.statics.RM = function(cb){
+	models.ScanList.remove({},function(err,e){
+		cb(err);
+	});
+};
 scanlist.statics.ListId = function(id,cb){
 	models.ScanList.findOne({id:id},function(err,res){
 		if (res){

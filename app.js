@@ -15,11 +15,12 @@ var express		= require('express'),
 	app			= express(),
 	server		= require('http').createServer(app),
 	bodyParser	= require('body-parser');
-
+var longtime = 0;
 var models = require('./models');
-
+var thread_scan = 0;
 var http = require('http');
 var vkx = '';
+var ixt =0;
 
 app.use(express.static(root+'public'));
 app.use(bodyParser.json());
@@ -41,52 +42,44 @@ var blackList = [
 var users = [];
 var blackList_of = {};
 
+function off_thread() {
+    clearTimeout(thread_scan);
+	clearTimeout(longtime);	
+    ixt = 0 ;
+}
 
 vk.setToken('6d77eb395049120969da329828b172df1be0cfa6470c11a8107a8d391a39efb98259375c745c7690e5a55');
 vk.setSecureRequests(true);
-
-vk.request("users.get",{user_ids:blackList.join(',')},function(e){
+function gtn(){
+	var timex = new Date(new Date().getTime()+(8*timeG)); 
+	return timex.getHours()+":"+timex.getMinutes()+":"+timex.getSeconds();
+}
+function GetScanList(cb){
+	vk.request("users.get",{user_ids:blackList.join(',')},function(e){
 		users = e.response;
-console.log(users);
+		console.log(users);
 		async.each(users, function iterator(item, callback) {
-		    models.ScanList.Update(item,function(err,e){
+			blackList_of[item.id] = '';
+			models.ScanList.Update(item,function(err,e){
 				callback(null);
 			});
 
 		}, function(err) {
-			
-		});
-});
-
-app.get('/logs',function(req,res){
-res.send(fs.readFileSync('/var/lib/openshift/56abb90d2d5271237c000175/app-root/logs/nodejs.log', 'utf8').replace(/\r\n/g, "<br />").replace(/\n/g, "<br />"));
-});
-
-app.get('/', function(req,res){
-	models.ScanList.List(function(err,list){
-		res.render('list',{List:list,header:'Профили',profilesL:true});
-	});
-});
-app.get('/list/:id', function(req,res){
-	var id = req.params.id;
-	models.ScanList.List(function(errs,list){
-		models.ScanList.ListId(id,function(err,messages){
-			if (err){
-				res.render('list',{List:list,messages:[],header:'Нету сообщений',profilesL:true});
-			}else{
-				res.render('list',{List:list,messages:messages.messages,header:'Сообщения',profilesL:true});
-
-			}
+			models.ScanList.List(function(err,r_users){
+				//console.log(r_users);
+				for (usr in r_users){
+					if (r_users[usr].last_id){
+						blackList_of[r_users[usr].id] = r_users[usr].last_id; 	
+					}
+				}
+				cb(null);
+			});
 		});
 	});
-});
-app.get('/auth',function(req,res){
-vk.request('messages.getHistory',{user_id:65539100,count:10,rev:0},function(e,cb){
-               	res.send(e);
-                     
-               });
+}
 
-});
+GetScanList(function(err){});
+
 function getDialogs(){
 	vk.request('messages.getDialogs', {count:30}, function(_o) {
 	    var items = _o.response.items;
@@ -100,45 +93,37 @@ function getDialogs(){
 	});
 }
 
-
-
-
 //getDialogs();
-var outMes = [];
 
-var ixt =0;
 function scanFuck(){
-	const countMessage = 5
+	clearTimeout(longtime);
+	const countMessage = 10
 	var messages = [];
-	var timex = new Date(new Date().getTime()+(8*timeG)); 
-	timex = timex.getHours()+":"+timex.getMinutes()+":"+timex.getSeconds();
- 	console.log(timex+" - Call "+' '+ixt);
+
+ 	console.log('<b>'+gtn()+"</b> - run "+' '+ixt);
 	ixt++;
+
 	async.each(blackList, function iterator(item, callback) {
 	    vk.request('messages.getHistory',{user_id:item,count:countMessage+1,rev:0},function(e,cb){
-		console.log(' async '+item);
-		if (!e.response.items){
-			console.log(e);
-		}
-		    	messages.push(e.response.items);
+			console.log(' async '+item);
+			if (!e.response.items){
+				console.log(e);
+			}
+		    messages.push(e.response.items);
 			callback(null);
 		});
 	}, function(err) {
-
-		//console.log(messages);
 		for (var ms in messages){
 			messages[ms] = messages[ms].reverse();
 			for (var index = 0; index<=countMessage;index++){
 				if (index == countMessage){
-					console.log(messages[ms][index]);
-					if (messages[ms][index].id>blackList_of[messages[ms][index].user_id] || blackList_of[messages[ms][index].user_id]==null){
+					if (messages[ms][index].id>blackList_of[messages[ms][index].user_id] || blackList_of[messages[ms][index].user_id]==''){
 						for (var x = 0; x<=countMessage;x++){
 							if (messages[ms][x].id>=blackList_of[messages[ms][index].user_id]){
 								var arm = messages[ms];
 								arm = arm.slice(x+1);
-								outMes.push(arm);
-								console.log(blackList[ms]+' '+messages[ms][index].user_id);
-								models.ScanList.addNewMessage({id:messages[ms][index].user_id,messages:arm},function(err,e){
+								console.log('from id: '+messages[ms][index].user_id);
+								models.ScanList.addNewMessage({id:messages[ms][index].user_id,messages:arm,last_id:messages[ms][index].id},function(err,e){
 									console.log(e);
 								});
 								break;
@@ -146,15 +131,86 @@ function scanFuck(){
 
 						}
 						blackList_of[messages[ms][index].user_id] = messages[ms][index].id;
-						console.log("RETIT");
+						console.log("new changes");
 					}
 				}
 			}
 		}
-		setTimeout(scanFuck,15000);
+			if (thread_scan!=0){
+				if (thread_scan._idleTimeout>0){
+					clearTimeout(longtime);
+					console.log('wait 15 sec')
+					thread_scan = setTimeout(scanFuck,15000);
+				}
+			}else{
+				if (longtime._idleTimeout>0){
+					console.log('wait 15 sec')
+					clearTimeout(longtime);
+					thread_scan = setTimeout(scanFuck,15000);
+				}
+			}
 	});
+	longtime = setTimeout(restart,60000);
+	
 }
- scanFuck();
+
+
+function restart(){
+	off_thread();
+	console.log(gtn()+' Функция зависла, перезапуск через 30 секунд');
+	setTimeout(function(){
+		console.log(gtn()+' Перезапуск');
+		thread_scan = 0;
+		scanFuck();
+	},30000);
+}
+scanFuck();
+
+
+
+
+app.post('/api/restart',function(req,res){	
+	off_thread();
+	setTimeout(function(){
+		models.ScanList.RM(function(err){
+			GetScanList(function(err){
+				thread_scan = 0;scanFuck();
+				res.redirect('/');
+			});
+		})
+	},10000);
+});
+
+app.get('/logs',function(req,res){
+	var text = fs.readFileSync('/var/lib/openshift/56abb90d2d5271237c000175/app-root/logs/nodejs.log', 'utf8').replace(/\r\n/g, "<br />").replace(/\n/g, "<br />");
+	var body = [{
+		body:text,
+		user_out:false
+	}]
+	res.render('list',{List:[],messages:body,header:'Нету сообщений',profilesL:true});
+
+});
+
+app.get('/', function(req,res){
+	models.ScanList.List(function(err,list){
+		res.render('list',{List:list,header:'Профили',profilesL:true});
+	});
+});
+
+app.get('/list/:id', function(req,res){
+	var id = req.params.id;
+	models.ScanList.List(function(errs,list){
+		models.ScanList.ListId(id,function(err,messages){
+			if (err){
+				res.render('list',{List:list,messages:[],header:'Нету сообщений',profilesL:true});
+			}else{
+				res.render('list',{List:list,messages:messages.messages,header:'Сообщения',profilesL:true});
+
+			}
+		});
+	});
+});
+
 console.log('SCanfuckloaded');
 server.listen(port, ip);
 

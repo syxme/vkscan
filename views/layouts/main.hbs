@@ -20,12 +20,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Syxme PHISH</a>
+          <a class="navbar-brand" href="/">Syxme VK Scan</a>
+          <a class="navbar-brand restart" href="#">Clear&Restart</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li class="{{#if profilesL}}active{{/if}}"><a href="/profiles" >Профили</a></li>
-			<li class="{{#if senderL}}active{{/if}}"><a href="/sender">Раcсылка</a></li>
+            <li class="{{#if profilesL}}active{{/if}}"><a href="/Logs">Логи</a></li>
           </ul>
         </div>
       </div>
@@ -40,5 +40,15 @@
     		{{{body}}}
     	</div>
     </div>
+<script type="text/javascript">
+$( document ).ready(function() {
+  $('.restart').click(function(){
+    var data = $(this).closest('tr');
+    $.post('/api/restart',{},function(e){
+      document.location.href = '/';
+    });
+  });
+});  
+</script>
 </body>
 </html>
