@@ -164,10 +164,8 @@ function scanFuck(){
 function restart(){
 	off_thread();
 	console.log(gtn()+' Функция зависла, перезапуск через 30 секунд');
-	vk.request('messages.getHistory',{user_id:blackList[0],count:countMessage+1,rev:0},function(e,cb){
-		console.log(e);
-		init();
-	});
+	
+	init();
 	setTimeout(function(){
 		console.log(gtn()+' Перезапуск');
 		thread_scan = 0;
@@ -192,14 +190,14 @@ app.post('/api/restart',function(req,res){
 });
 
 app.get('/logs',function(req,res){
-	var text = 'sadf';//fs.readFileSync('/var/lib/openshift/56abb90d2d5271237c000175/app-root/logs/nodejs.log', 'utf8').replace(/\r\n/g, "<br />").replace(/\n/g, "<br />");
-	res.render('list',{List:[],messages:[],bodyLog:text,header:'Нету сообщений',profilesL:true});
+	var text = fs.readFileSync('/var/lib/openshift/56abb90d2d5271237c000175/app-root/logs/nodejs.log', 'utf8').replace(/\r\n/g, "<br />").replace(/\n/g, "<br />");
+	res.render('list',{List:[],messages:[],bodyLog:text,header:'Логи',profilesL:true});
 
 });
 
 app.get('/', function(req,res){
 	models.ScanList.List(function(err,list){
-		res.render('list',{List:list,header:'Профили',profilesL:true});
+		res.render('list',{List:list,header:'SCAN',profilesL:true});
 	});
 });
 
