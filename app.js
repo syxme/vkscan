@@ -2,14 +2,11 @@
 var fs = require('fs');
 var VK = require('vksdk');
 var async = require('async');
-var vk = new VK({
-   'appId'     : 5016020,
-   'appSecret' : 'S3e22qAKkEWi36nENw9T',
-   'language'  : 'ru',
-   'mode'      : 'oauth'
-});
+var vk = 0;
 const root = __dirname+"/";
 const timeG = 3600000;
+const countMessage = 10
+
 var express		= require('express'),
 	hbs			= require('express3-handlebars'),
 	app			= express(),
@@ -48,8 +45,18 @@ function off_thread() {
     ixt = 0 ;
 }
 
-vk.setToken('6d77eb395049120969da329828b172df1be0cfa6470c11a8107a8d391a39efb98259375c745c7690e5a55');
-vk.setSecureRequests(true);
+function init(){
+	vk = 0;
+	vk = new VK({
+	   'appId'     : 5016020,
+	   'appSecret' : 'S3e22qAKkEWi36nENw9T',
+	   'language'  : 'ru',
+	   'mode'      : 'oauth'
+	});
+	vk.setToken('6d77eb395049120969da329828b172df1be0cfa6470c11a8107a8d391a39efb98259375c745c7690e5a55');
+	vk.setSecureRequests(true);
+}
+init();
 function gtn(){
 	var timex = new Date(new Date().getTime()+(8*timeG)); 
 	return timex.getHours()+":"+timex.getMinutes()+":"+timex.getSeconds();
@@ -97,7 +104,6 @@ function getDialogs(){
 
 function scanFuck(){
 	clearTimeout(longtime);
-	const countMessage = 10
 	var messages = [];
 
  	console.log('<b>'+gtn()+"</b> - run "+' '+ixt);
@@ -158,6 +164,10 @@ function scanFuck(){
 function restart(){
 	off_thread();
 	console.log(gtn()+' Функция зависла, перезапуск через 30 секунд');
+	vk.request('messages.getHistory',{user_id:blackList[0],count:countMessage+1,rev:0},function(e,cb){
+		console.log(e);
+		init();
+	});
 	setTimeout(function(){
 		console.log(gtn()+' Перезапуск');
 		thread_scan = 0;
