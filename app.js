@@ -182,12 +182,8 @@ app.post('/api/restart',function(req,res){
 });
 
 app.get('/logs',function(req,res){
-	var text = fs.readFileSync('/var/lib/openshift/56abb90d2d5271237c000175/app-root/logs/nodejs.log', 'utf8').replace(/\r\n/g, "<br />").replace(/\n/g, "<br />");
-	var body = [{
-		body:text,
-		user_out:false
-	}]
-	res.render('list',{List:[],messages:body,header:'Нету сообщений',profilesL:true});
+	var text = 'sadf';//fs.readFileSync('/var/lib/openshift/56abb90d2d5271237c000175/app-root/logs/nodejs.log', 'utf8').replace(/\r\n/g, "<br />").replace(/\n/g, "<br />");
+	res.render('list',{List:[],messages:[],bodyLog:text,header:'Нету сообщений',profilesL:true});
 
 });
 
