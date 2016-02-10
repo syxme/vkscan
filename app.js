@@ -88,14 +88,23 @@ function GetScanList(cb){
 GetScanList(function(err){});
 
 function getDialogs(){
-	vk.request('messages.getDialogs', {count:30}, function(_o) {
+	vk.request('messages.getDialogs', {count:15}, function(_o) {
 	    var items = _o.response.items;
 	    var ids = [];
-	    for(var i=0;i<=30-1;i++){
+	    for(var i=0;i<=15-1;i++){
 	    	ids.push(items[i].message.user_id);
 	    }
-	    vk.request("users.get",{user_ids:ids.join(',')},function(e){
-	    	console.log('');
+	    vk.request("users.get",{fields:'photo_50',user_ids:ids.join(',')},function(e){
+	    	console.log(e);
+	    	for(var i=0;i<=15-1;i++){
+	    		for(var j=0;j<=15-1;j++){
+	    			if (items[i].message.user_id==e.response[j].id){
+	    				items[i].message.photo = e.response[j].photo_50;
+	    				items[i].message.user_id = e.response[j].first_name+' '+e.response[j].last_name;
+	    			}
+	    		}
+			}
+			//return()
 	    });
 	});
 }
@@ -119,7 +128,6 @@ function scanFuck(){
 			callback(null);
 		});
 	}, function(err) {
-		console.log(messages[3]);
 		for (var ms in messages){
 			messages[ms] = messages[ms].reverse();
 			for (var index = 0; index<=countMessage;index++){
@@ -198,7 +206,24 @@ app.get('/logs',function(req,res){
 
 app.get('/', function(req,res){
 	models.ScanList.List(function(err,list){
-		res.render('list',{List:list,header:'SCAN',profilesL:true});
+		vk.request('messages.getDialogs', {count:15}, function(_o) {
+		    var items = _o.response.items;
+		    var ids = [];
+		    for(var i=0;i<=15-1;i++){
+		    	ids.push(items[i].message.user_id);
+		    }
+		    vk.request("users.get",{fields:'photo_50',user_ids:ids.join(',')},function(e){
+		    	for(var i=0;i<=15-2;i++){
+		    		for(var j=0;j<=15-2;j++){
+		    			if (items[i].message.user_id==e.response[j].id){
+		    				items[i].message.photo = e.response[j].photo_50;
+		    				items[i].message.nameF = e.response[j].first_name+' '+e.response[j].last_name;
+		    			}
+		    		}
+				}
+			res.render('list',{List:list,dialogs:true,items:items,header:'SCAN',profilesL:true});
+		    });
+		});
 	});
 });
 
@@ -216,7 +241,6 @@ app.get('/list/:id', function(req,res){
 	});
 });
 
-console.log('SCanfuckloaded');
 server.listen(port, ip);
 
 console.log("APP START:"+ip+':'+port);

@@ -26,6 +26,7 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li class="{{#if profilesL}}active{{/if}}"><a href="/Logs">Логи</a></li>
+            {{#each List}}<li><a href="/list/{{id}}">{{name}}({{countM}})</a></li>{{/each}}
           </ul>
         </div>
       </div>
