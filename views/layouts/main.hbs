@@ -42,6 +42,8 @@
     </div>
 <script type="text/javascript">
 $( document ).ready(function() {
+//  window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+  window.scrollTo(0,document.body.scrollHeight);
   $('.restart').click(function(){
     var data = $(this).closest('tr');
     $.post('/api/restart',{},function(e){

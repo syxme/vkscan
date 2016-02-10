@@ -1,8 +1,8 @@
 <style type="text/css">
 .msbox {
-    padding: 8px;
-    padding-left: 15px;
+    padding: 15px;
     margin-bottom: 10px;
+    min-width: 320px;
     border-radius: 15px;
 }
 .timeX {
@@ -11,10 +11,19 @@
     font-size: 15px;
     float: left;
 }
+.bgrd{
+    border-bottom: 1px solid rgb(214, 214, 214);
+    padding-top: 15px;
+}
+
 .nameX{
     float: none;
     color: #000000;
 
+}
+.imgLoft{
+  width: 400px;
+  border-radius: 10px;
 }
 </style>
 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -26,9 +35,31 @@
 
     {{#each messages}}
       {{#if user_out}}
-        <div class="bg-success col-md-8 pull-right msbox"><p class="timeX">{{time}}</p>{{body}}</div>
+        <div class="col-md-12 pull-right bgrd">
+          <div class="bg-success  pull-right msbox">
+            <p class="timeX">{{time}}</p>{{body}}
+            {{#if attachments}}
+              {{#each attachments}}
+                {{#if photo}}<br>
+                  <img class="imgLoft" src="{{photo.photo_604}}"/>
+                {{/if}}
+              {{/each}}
+            {{/if}}
+          </div>
+        </div>
       {{else}}
-        <div class="bg-primary col-md-8 pull-left msbox"><p class="timeX">{{time}}</p><p class="timeX nameX">{{name}}</p>{{body}}</div>
+        <div class="col-md-12 pull-left bgrd">
+          <div class="bg-primary pull-left msbox">
+            <p class="timeX">{{time}}</p><p class="timeX nameX">{{name}}</p>{{body}}
+            {{#if attachments}}
+              {{#each attachments}}
+                {{#if photo}}<br>
+                  <img class="imgLoft" src="{{photo.photo_604}}"/>
+                {{/if}}
+              {{/each}}
+            {{/if}}
+          </div>
+        </div>
       {{/if}}
     {{/each}}
     </div>
@@ -36,11 +67,5 @@
 
 <script type="text/javascript">
 $( document ).ready(function() {
-  $('.remove').click(function(){
-    var data = $(this).closest('tr');
-    $.post('/api/removelist',{id:data.attr('id')},function(e){
-      data.remove();
-    });
-  });
 });  
 </script>

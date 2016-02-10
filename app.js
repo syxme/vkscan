@@ -119,6 +119,7 @@ function scanFuck(){
 			callback(null);
 		});
 	}, function(err) {
+		console.log(messages[3]);
 		for (var ms in messages){
 			messages[ms] = messages[ms].reverse();
 			for (var index = 0; index<=countMessage;index++){
