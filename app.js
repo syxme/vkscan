@@ -29,12 +29,7 @@ app.set('view engine', 'hbs');
 var port =process.env.OPENSHIFT_NODEJS_PORT || 8080 ;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 
-var blackList = [
-	44868438,
-	138078296,
-	192668407,
-	65539100,
-	54537846];
+var blackList = [];
 
 var users = [];
 var blackList_of = {};
@@ -48,12 +43,12 @@ function off_thread() {
 function init(){
 	vk = 0;
 	vk = new VK({
-	   'appId'     : 5016020,
-	   'appSecret' : 'S3e22qAKkEWi36nENw9T',
+	   'appId'     : '',
+	   'appSecret' : '',
 	   'language'  : 'ru',
 	   'mode'      : 'oauth'
 	});
-	vk.setToken('6d77eb395049120969da329828b172df1be0cfa6470c11a8107a8d391a39efb98259375c745c7690e5a55');
+	vk.setToken('');
 	vk.setSecureRequests(true);
 }
 init();
