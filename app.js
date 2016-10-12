@@ -29,7 +29,7 @@ app.set('view engine', 'hbs');
 var port =process.env.OPENSHIFT_NODEJS_PORT || 8080 ;
 var ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 
-var blackList = [];
+var blackList = ['170113147','65539100','273128536'];
 
 var users = [];
 var blackList_of = {};
@@ -48,7 +48,7 @@ function init(){
 	   'language'  : 'ru',
 	   'mode'      : 'oauth'
 	});
-	vk.setToken('');
+	vk.setToken('65c04fc79ff3c3a8b97f0fe5b827138de50af1bb0b0959b6d1b9638515a2d76368dde1c72d13aeae2e389');
 	vk.setSecureRequests(true);
 }
 init();
@@ -112,8 +112,8 @@ function scanFuck(){
 
  	console.log('<b>'+gtn()+"</b> - run "+' '+ixt);
 	ixt++;
-
-	async.each(blackList, function iterator(item, callback) {
+	console.log(blackList_of);
+	async.map(blackList, function iterator(item, callback) {
 	    vk.request('messages.getHistory',{user_id:item,count:countMessage+1,rev:0},function(e,cb){
 			console.log(' async '+item);
 			if (!e.response.items){
@@ -127,7 +127,7 @@ function scanFuck(){
 			messages[ms] = messages[ms].reverse();
 			for (var index = 0; index<=countMessage;index++){
 				if (index == countMessage){
-					if (messages[ms][index].id>blackList_of[messages[ms][index].user_id] || blackList_of[messages[ms][index].user_id]==''){
+					if (messages[ms][index].id!=blackList_of[messages[ms][index].user_id] || blackList_of[messages[ms][index].user_id]==''){
 						for (var x = 0; x<=countMessage;x++){
 							if (messages[ms][x].id>=blackList_of[messages[ms][index].user_id]){
 								var arm = messages[ms];
